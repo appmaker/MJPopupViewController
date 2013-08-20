@@ -53,15 +53,15 @@ static void * const keypath = (void*)&keypath;
     
 }
 
-- (void)presentPopupViewController:(UIViewController*)popupViewController animationType:(MJPopupViewAnimation)animationType backgroundClickable:(BOOL)bgClickable dismissed:(void(^)(void))dismissed
+- (void)presentPopupViewController:(UIViewController*)popupViewController animationType:(MJPopupViewAnimation)animationType backgroundClickable:(BOOL)bgClickable marginY:(int)marginY dismissed:(void(^)(void))dismissed
 {
     self.mj_popupViewController = popupViewController;
-    [self presentPopupView:popupViewController.view animationType:animationType backgroundClickable:bgClickable dismissed:dismissed];
+    [self presentPopupView:popupViewController.view animationType:animationType backgroundClickable:bgClickable marginY:marginY dismissed:dismissed];
 }
 
-- (void)presentPopupViewController:(UIViewController*)popupViewController animationType:(MJPopupViewAnimation)animationType backgroundClickable:(BOOL)bgClickable
+- (void)presentPopupViewController:(UIViewController*)popupViewController animationType:(MJPopupViewAnimation)animationType backgroundClickable:(BOOL)bgClickable marginY:(int)marginY
 {
-    [self presentPopupViewController:popupViewController animationType:animationType backgroundClickable:bgClickable dismissed:nil];
+    [self presentPopupViewController:popupViewController animationType:animationType backgroundClickable:bgClickable marginY:marginY dismissed:nil];
 }
 
 - (void)dismissPopupViewControllerWithanimationType:(MJPopupViewAnimation)animationType
@@ -95,12 +95,12 @@ static void * const keypath = (void*)&keypath;
 #pragma mark -
 #pragma mark View Handling
 
-- (void)presentPopupView:(UIView*)popupView animationType:(MJPopupViewAnimation)animationType backgroundClickable:(BOOL)bgClickable
+- (void)presentPopupView:(UIView*)popupView animationType:(MJPopupViewAnimation)animationType backgroundClickable:(BOOL)bgClickable marginY:(int)marginY
 {
-    [self presentPopupView:popupView animationType:animationType backgroundClickable:bgClickable dismissed:nil];
+    [self presentPopupView:popupView animationType:animationType backgroundClickable:bgClickable marginY:(int)marginY dismissed:nil];
 }
 
-- (void)presentPopupView:(UIView*)popupView animationType:(MJPopupViewAnimation)animationType backgroundClickable:(BOOL)bgClickable dismissed:(void(^)(void))dismissed
+- (void)presentPopupView:(UIView*)popupView animationType:(MJPopupViewAnimation)animationType backgroundClickable:(BOOL)bgClickable marginY:(int)marginY dismissed:(void(^)(void))dismissed
 {
     UIView *sourceView = [self topView];
     sourceView.tag = kMJSourceViewTag;
@@ -159,7 +159,7 @@ static void * const keypath = (void*)&keypath;
         case MJPopupViewAnimationSlideRightLeft:
         case MJPopupViewAnimationSlideRightRight:
             dismissButton.tag = animationType;
-            [self slideViewIn:popupView sourceView:sourceView overlayView:overlayView withAnimationType:animationType];
+            [self slideViewIn:popupView sourceView:sourceView overlayView:overlayView withAnimationType:animationType marginY:marginY];
             break;
         default:
             dismissButton.tag = MJPopupViewAnimationFade;
@@ -209,7 +209,7 @@ static void * const keypath = (void*)&keypath;
 
 #pragma mark --- Slide
 
-- (void)slideViewIn:(UIView*)popupView sourceView:(UIView*)sourceView overlayView:(UIView*)overlayView withAnimationType:(MJPopupViewAnimation)animationType
+- (void)slideViewIn:(UIView*)popupView sourceView:(UIView*)sourceView overlayView:(UIView*)overlayView withAnimationType:(MJPopupViewAnimation)animationType marginY:(int)marginY
 {
     // Generating Start and Stop Positions
     CGSize sourceSize = sourceView.bounds.size;
@@ -248,7 +248,7 @@ static void * const keypath = (void*)&keypath;
             break;
     }
     CGRect popupEndRect = CGRectMake((sourceSize.width - popupSize.width) / 2,
-                                     (sourceSize.height - popupSize.height) / 2,
+                                     (sourceSize.height - popupSize.height) / 2 + marginY,
                                      popupSize.width,
                                      popupSize.height);
     
