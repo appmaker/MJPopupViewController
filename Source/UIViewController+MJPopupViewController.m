@@ -19,8 +19,10 @@
 #define kMJOverlayViewTag 23945
 
 @interface UIViewController (MJPopupViewControllerPrivate)
+
 - (UIView*)topView;
 - (void)presentPopupView:(UIView*)popupView;
+
 @end
 
 static NSString *MJPopupViewDismissedKey = @"MJPopupViewDismissed";
@@ -51,15 +53,15 @@ static void * const keypath = (void*)&keypath;
     
 }
 
-- (void)presentPopupViewController:(UIViewController*)popupViewController animationType:(MJPopupViewAnimation)animationType dismissed:(void(^)(void))dismissed
+- (void)presentPopupViewController:(UIViewController*)popupViewController animationType:(MJPopupViewAnimation)animationType backgroundClickable:(BOOL)bgClickable dismissed:(void(^)(void))dismissed
 {
     self.mj_popupViewController = popupViewController;
-    [self presentPopupView:popupViewController.view animationType:animationType dismissed:dismissed];
+    [self presentPopupView:popupViewController.view animationType:animationType backgroundClickable:bgClickable dismissed:dismissed];
 }
 
-- (void)presentPopupViewController:(UIViewController*)popupViewController animationType:(MJPopupViewAnimation)animationType
+- (void)presentPopupViewController:(UIViewController*)popupViewController animationType:(MJPopupViewAnimation)animationType backgroundClickable:(BOOL)bgClickable
 {
-    [self presentPopupViewController:popupViewController animationType:animationType dismissed:nil];
+    [self presentPopupViewController:popupViewController animationType:animationType backgroundClickable:bgClickable dismissed:nil];
 }
 
 - (void)dismissPopupViewControllerWithanimationType:(MJPopupViewAnimation)animationType
@@ -93,12 +95,12 @@ static void * const keypath = (void*)&keypath;
 #pragma mark -
 #pragma mark View Handling
 
-- (void)presentPopupView:(UIView*)popupView animationType:(MJPopupViewAnimation)animationType
+- (void)presentPopupView:(UIView*)popupView animationType:(MJPopupViewAnimation)animationType backgroundClickable:(BOOL)bgClickable
 {
-    [self presentPopupView:popupView animationType:animationType dismissed:nil];
+    [self presentPopupView:popupView animationType:animationType backgroundClickable:bgClickable dismissed:nil];
 }
 
-- (void)presentPopupView:(UIView*)popupView animationType:(MJPopupViewAnimation)animationType dismissed:(void(^)(void))dismissed
+- (void)presentPopupView:(UIView*)popupView animationType:(MJPopupViewAnimation)animationType backgroundClickable:(BOOL)bgClickable dismissed:(void(^)(void))dismissed
 {
     UIView *sourceView = [self topView];
     sourceView.tag = kMJSourceViewTag;
@@ -131,17 +133,22 @@ static void * const keypath = (void*)&keypath;
     [overlayView addSubview:self.mj_popupBackgroundView];
     
     // Make the Background Clickable
+
     UIButton * dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
     dismissButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     dismissButton.backgroundColor = [UIColor clearColor];
     dismissButton.frame = sourceView.bounds;
-    [overlayView addSubview:dismissButton];
+
+    if (bgClickable){
+        [overlayView addSubview:dismissButton];
+    }
     
     popupView.alpha = 0.0f;
     [overlayView addSubview:popupView];
     [sourceView addSubview:overlayView];
     
     [dismissButton addTarget:self action:@selector(dismissPopupViewControllerWithanimation:) forControlEvents:UIControlEventTouchUpInside];
+    
     switch (animationType) {
         case MJPopupViewAnimationSlideBottomTop:
         case MJPopupViewAnimationSlideBottomBottom:
